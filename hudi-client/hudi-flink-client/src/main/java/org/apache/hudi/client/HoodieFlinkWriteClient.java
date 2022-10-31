@@ -299,7 +299,7 @@ public class HoodieFlinkWriteClient<T extends HoodieRecordPayload> extends
    */
   public void initMetadataWriter() {
     this.metadataWriter = (HoodieBackedTableMetadataWriter) FlinkHoodieBackedTableMetadataWriter.create(
-        FlinkClientUtil.getHadoopConf(), this.config, HoodieFlinkEngineContext.DEFAULT);
+        FlinkClientUtil.getHadoopConf(new org.apache.flink.configuration.Configuration()), this.config, HoodieFlinkEngineContext.DEFAULT);
   }
 
   /**

@@ -18,6 +18,7 @@
 
 package org.apache.hudi.client.common;
 
+import org.apache.flink.configuration.Configuration;
 import org.apache.hudi.client.FlinkTaskContextSupplier;
 import org.apache.hudi.common.config.SerializableConfiguration;
 import org.apache.hudi.common.data.HoodieAccumulator;
@@ -64,11 +65,11 @@ public class HoodieFlinkEngineContext extends HoodieEngineContext {
   private final RuntimeContext runtimeContext;
 
   private HoodieFlinkEngineContext() {
-    this(new SerializableConfiguration(FlinkClientUtil.getHadoopConf()), new DefaultTaskContextSupplier());
+    this(new SerializableConfiguration(FlinkClientUtil.getHadoopConf(new Configuration())), new DefaultTaskContextSupplier());
   }
 
   public HoodieFlinkEngineContext(TaskContextSupplier taskContextSupplier) {
-    this(new SerializableConfiguration(FlinkClientUtil.getHadoopConf()), taskContextSupplier);
+    this(new SerializableConfiguration(FlinkClientUtil.getHadoopConf(new Configuration())), taskContextSupplier);
   }
 
   public HoodieFlinkEngineContext(SerializableConfiguration hadoopConf, TaskContextSupplier taskContextSupplier) {

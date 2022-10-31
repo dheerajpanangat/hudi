@@ -35,17 +35,17 @@ public class FlinkClientUtil {
    * Creates the meta client.
    */
   public static HoodieTableMetaClient createMetaClient(String basePath) {
-    return HoodieTableMetaClient.builder().setBasePath(basePath).setConf(FlinkClientUtil.getHadoopConf()).build();
+    return HoodieTableMetaClient.builder().setBasePath(basePath).setConf(FlinkClientUtil.getHadoopConf(new Configuration())).build();
   }
 
   /**
    * Returns the hadoop configuration with possible hadoop conf paths.
    * E.G. the configurations under path $HADOOP_CONF_DIR and $HADOOP_HOME.
    */
-  public static org.apache.hadoop.conf.Configuration getHadoopConf() {
+  public static org.apache.hadoop.conf.Configuration getHadoopConf(Configuration conf) {
     // create hadoop configuration with hadoop conf directory configured.
     org.apache.hadoop.conf.Configuration hadoopConf = null;
-    for (String possibleHadoopConfPath : HadoopUtils.possibleHadoopConfPaths(new Configuration())) {
+    for (String possibleHadoopConfPath : HadoopUtils.possibleHadoopConfPaths(conf)) {
       hadoopConf = getHadoopConfiguration(possibleHadoopConfPath);
       if (hadoopConf != null) {
         break;

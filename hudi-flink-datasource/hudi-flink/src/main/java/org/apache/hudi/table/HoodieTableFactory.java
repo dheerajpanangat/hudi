@@ -18,6 +18,8 @@
 
 package org.apache.hudi.table;
 
+import org.apache.flink.configuration.ReadableConfig;
+import org.apache.flink.table.api.TableConfig;
 import org.apache.hudi.common.model.DefaultHoodieRecordPayload;
 import org.apache.hudi.common.util.StringUtils;
 import org.apache.hudi.configuration.FlinkOptions;
@@ -70,7 +72,7 @@ public class HoodieTableFactory implements DynamicTableSourceFactory, DynamicTab
     Configuration conf = FlinkOptions.fromMap(context.getCatalogTable().getOptions());
     ResolvedSchema schema = context.getCatalogTable().getResolvedSchema();
     sanityCheck(conf, schema);
-    setupConfOptions(conf, context.getObjectIdentifier(), context.getCatalogTable(), schema);
+    setupConfOptions(conf, context, schema);
 
     Path path = new Path(conf.getOptional(FlinkOptions.PATH).orElseThrow(() ->
         new ValidationException("Option [path] should not be empty.")));
@@ -89,7 +91,7 @@ public class HoodieTableFactory implements DynamicTableSourceFactory, DynamicTab
         "Option [path] should not be empty.");
     ResolvedSchema schema = context.getCatalogTable().getResolvedSchema();
     sanityCheck(conf, schema);
-    setupConfOptions(conf, context.getObjectIdentifier(), context.getCatalogTable(), schema);
+    setupConfOptions(conf, context, schema);
     return new HoodieTableSink(conf, schema);
   }
 
@@ -160,15 +162,15 @@ public class HoodieTableFactory implements DynamicTableSourceFactory, DynamicTab
    * Sets up the config options based on the table definition, for e.g, the table name, primary key.
    *
    * @param conf      The configuration to set up
-   * @param tablePath The table path
-   * @param table     The catalog table
+   * @param context   The context
    * @param schema    The physical schema
    */
   private static void setupConfOptions(
       Configuration conf,
-      ObjectIdentifier tablePath,
-      CatalogTable table,
+      Context context,
       ResolvedSchema schema) {
+    CatalogTable table = context.getCatalogTable();
+    ObjectIdentifier tablePath = context.getObjectIdentifier();
     // table name
     conf.setString(FlinkOptions.TABLE_NAME.key(), tablePath.getObjectName());
     // hoodie key about options
@@ -183,6 +185,8 @@ public class HoodieTableFactory implements DynamicTableSourceFactory, DynamicTab
     setupWriteOptions(conf);
     // infer avro schema from physical DDL schema
     inferAvroSchema(conf, schema.toPhysicalRowDataType().notNull().getLogicalType());
+    // flink configuration
+    setupRootOptions(conf, context.getConfiguration());
   }
 
   /**
@@ -345,6 +349,14 @@ public class HoodieTableFactory implements DynamicTableSourceFactory, DynamicTab
         && !conf.getOptional(FlinkOptions.SOURCE_AVRO_SCHEMA).isPresent()) {
       String inferredSchema = AvroSchemaConverter.convertToSchema(rowType).toString();
       conf.setString(FlinkOptions.SOURCE_AVRO_SCHEMA, inferredSchema);
+    }
+  }
+
+  private static void setupRootOptions(Configuration conf, ReadableConfig configuration) {
+    if (configuration instanceof TableConfig) {
+      ((Configuration)((TableConfig) configuration).getRootConfiguration()).toMap().forEach((rootConfigKey, rootConfigValue) -> {
+        conf.setString(rootConfigKey, rootConfigValue);
+      });
     }
   }
 }

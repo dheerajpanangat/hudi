@@ -20,50 +20,17 @@
     <parent>
         <artifactId>hudi-flink-datasource</artifactId>
         <groupId>org.apache.hudi</groupId>
-        <version>0.12.1-GUPSHUP-SNAPSHOT</version>
+        <version>0.13.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>hudi-flink1.15.x</artifactId>
-    <version>0.12.1-GUPSHUP-SNAPSHOT</version>
+    <version>0.13.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
         <main.basedir>${project.parent.parent.basedir}</main.basedir>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>gupshup-internal</id>
-            <name>Gupshup Internal</name>
-            <url>http://nexus.gupshup.tech/repository/maven-public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>gupshup-nexus</id>
-            <name>Snapshots</name>
-            <url>http://nexus.gupshup.tech/repository/maven-snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <id>gupshup-nexus</id>
-            <name>Releases</name>
-            <url>http://nexus.gupshup.tech/repository/maven-releases/</url>
-        </repository>
-    </distributionManagement>
-
-    <scm>
-        <connection>scm:git:git@github.com:dheerajpanangat/hudi.git</connection>
-        <url>scm:git:git@github.com:dheerajpanangat/hudi.git</url>
-        <developerConnection>scm:git:git@github.com:dheerajpanangat/hudi.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
 
     <dependencies>
         <!-- Logging -->
@@ -84,7 +51,7 @@
         <dependency>
             <groupId>org.apache.hudi</groupId>
             <artifactId>hudi-common</artifactId>
-            <version>0.13.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
@@ -152,7 +119,7 @@
         <dependency>
             <groupId>org.apache.hudi</groupId>
             <artifactId>hudi-tests-common</artifactId>
-            <version>0.13.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- Junit 5 dependencies -->

@@ -18,8 +18,6 @@
 
 package org.apache.hudi.table;
 
-import org.apache.flink.configuration.ReadableConfig;
-import org.apache.flink.table.api.TableConfig;
 import org.apache.hudi.common.model.DefaultHoodieRecordPayload;
 import org.apache.hudi.common.util.StringUtils;
 import org.apache.hudi.configuration.FlinkOptions;
@@ -32,7 +30,6 @@ import org.apache.hudi.keygen.TimestampBasedAvroKeyGenerator;
 import org.apache.hudi.keygen.constant.KeyGeneratorOptions;
 import org.apache.hudi.util.AvroSchemaConverter;
 import org.apache.hudi.util.DataTypeUtils;
-
 import org.apache.flink.configuration.ConfigOption;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.table.api.ValidationException;
@@ -186,7 +183,7 @@ public class HoodieTableFactory implements DynamicTableSourceFactory, DynamicTab
     // infer avro schema from physical DDL schema
     inferAvroSchema(conf, schema.toPhysicalRowDataType().notNull().getLogicalType());
     // flink configuration
-    setupRootOptions(conf, context.getConfiguration());
+    HoodieTableFactoryConfigUtil.setupRootOptions(conf, context.getConfiguration());
   }
 
   /**
@@ -349,14 +346,6 @@ public class HoodieTableFactory implements DynamicTableSourceFactory, DynamicTab
         && !conf.getOptional(FlinkOptions.SOURCE_AVRO_SCHEMA).isPresent()) {
       String inferredSchema = AvroSchemaConverter.convertToSchema(rowType).toString();
       conf.setString(FlinkOptions.SOURCE_AVRO_SCHEMA, inferredSchema);
-    }
-  }
-
-  private static void setupRootOptions(Configuration conf, ReadableConfig configuration) {
-    if (configuration instanceof TableConfig) {
-      ((Configuration)((TableConfig) configuration).getRootConfiguration()).toMap().forEach((rootConfigKey, rootConfigValue) -> {
-        conf.setString(rootConfigKey, rootConfigValue);
-      });
     }
   }
 }
